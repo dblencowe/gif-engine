@@ -1,7 +1,7 @@
 package database
 
 type MongoImageRecord struct {
-	Filepath string `bson:"url"`
+	Filepath string
 	Tags     []string
 }
 

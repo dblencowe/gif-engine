@@ -5,6 +5,9 @@ services:
       - "5000:5000"
     environment:
       MONGODB_URI: mongodb://root:root@mongodb:27017/
+      DATA_DIR: /data
+    volumes:
+      - data:/data
   mongodb:
     image: mongo
     environment:
@@ -20,3 +23,6 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:root@mongodb:27017/
       ME_CONFIG_BASICAUTH: false
+
+volumes:
+  data:

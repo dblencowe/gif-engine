@@ -3,14 +3,12 @@ package endpoints
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"slices"
 	"strconv"
-	"strings"
 
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/database"
+	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/utils"
 )
 
 type GetGifEndpoint struct {
@@ -43,33 +41,13 @@ func (ep *GetGifEndpoint) Execute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Accepted types: %+v", r.Header.Get("Accept"))
-	// @todo clean this up
-	if slices.Contains(formatAcceptHeader(r.Header.Get("Accept")), "image/gif") {
-		w.Header().Add("Content-Type", "image/gif")
-		res, err := http.Get(rst.Url())
-		if err != nil || res.StatusCode != 200 {
-			log.Printf("Error fetching image from URL: %v", err)
-			http.Error(w, fmt.Sprintf("Unable to fetch image from %s", rst.Url()), http.StatusInternalServerError)
-		}
-		defer res.Body.Close()
-
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			log.Printf("Error decoding body of response: %v", err)
-			http.Error(w, fmt.Sprintf("Unable to fetch image from %s", rst.Url()), http.StatusInternalServerError)
-		}
-		w.Header().Set("Content-Length", strconv.Itoa(len(body)))
-		w.Write(body)
+	w.Header().Add("Content-Type", "image/gif")
+	body, err := utils.LoadBytesFromFS(rst.Url())
+	if err != nil {
+		log.Println("Unable to load image", err)
+		http.Error(w, "Unable to load image", http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Fprint(w, rst.Url())
-}
-
-func formatAcceptHeader(header string) []string {
-	types := strings.Split(header, ",")
-	for i, t := range types {
-		types[i] = strings.Trim(t, " ")
-	}
-	return types
+	w.Header().Set("Content-Length", strconv.Itoa(len(body)))
+	w.Write(body)
 }

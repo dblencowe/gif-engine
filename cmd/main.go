@@ -16,6 +16,7 @@ var db database.DB
 
 type Environment struct {
 	MongoDBURI string `env:"MONGODB_URI"`
+	DataDirectory string `env:"DATA_DIR"`
 	Extras     env.EnvSet
 }
 
@@ -25,6 +26,7 @@ func init() {
 		log.Fatal(err)
 	}
 	cfg.Extras = es
+	log.Printf("Loaded Configuration: %+v", cfg)
 
 	mdb, err := database.NewMongoDB(context.TODO(), cfg.MongoDBURI)
 	if err != nil {
@@ -35,6 +37,7 @@ func init() {
 	httpEndpoints = []endpoints.Endpoint{
 		&endpoints.IndexGifEndpoint{
 			DB: db,
+			ImagePath: cfg.DataDirectory,
 		},
 		&endpoints.GetGifEndpoint{
 			DB: db,

@@ -3,13 +3,16 @@ package endpoints
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/database"
+	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/utils"
 )
 
 type IndexGifEndpoint struct {
-	DB database.DB
+	DB        database.DB
+	ImagePath string
 }
 
 func (ep *IndexGifEndpoint) Path() string {
@@ -29,6 +32,15 @@ func (ep *IndexGifEndpoint) Execute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	localFile, err := utils.DownloadUrlToFile(req.Filepath, ep.ImagePath)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Unable to download image", http.StatusInternalServerError)
+		return
+	}
+	req.Source = req.Filepath
+	req.Filepath = localFile
+
 	err = ep.DB.Write(context.TODO(), req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -38,6 +50,7 @@ func (ep *IndexGifEndpoint) Execute(w http.ResponseWriter, r *http.Request) {
 }
 
 type indexGifRequest struct {
-	Url  string
-	Tags []string
+	Filepath string `json:"url"`
+	Tags     []string
+	Source   string
 }
