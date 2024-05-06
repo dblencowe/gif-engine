@@ -36,6 +36,9 @@ func init() {
 		&endpoints.IndexGifEndpoint{
 			DB: db,
 		},
+		&endpoints.GetGifEndpoint{
+			DB: db,
+		},
 		&endpoints.BaseEndpoint{},
 	}
 }

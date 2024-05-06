@@ -3,7 +3,6 @@ package endpoints
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/database"
@@ -23,7 +22,7 @@ func (ep *IndexGifEndpoint) Execute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req IndexGifRequest
+	var req indexGifRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -35,11 +34,10 @@ func (ep *IndexGifEndpoint) Execute(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Fprintf(w, "Record: %+v", req)
+	w.WriteHeader(http.StatusCreated)
 }
 
-type IndexGifRequest struct {
-	Url   string
+type indexGifRequest struct {
+	Url  string
 	Tags []string
 }

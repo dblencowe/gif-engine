@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,8 +10,6 @@ import (
 
 var MongoDatabase = "gif_engine" // @todo parameterise
 var MongoCollection = "images"
-
-var ErrFilterParse = errors.New("failed to parse filter to bson.D")
 
 func NewMongoDB(ctx context.Context, connectionURI string) (DB, error) {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectionURI))
@@ -43,17 +40,17 @@ func (db *MongoDB) Write(ctx context.Context, rawRecord any) error {
 	return err
 }
 
-func (db *MongoDB) Read(ctx context.Context, rawFilter any) (ImageRecord, error) {
-	filter, ok := rawFilter.(bson.D)
-	if !ok {
-		return nil, ErrFilterParse
-	}
-
+func (db *MongoDB) read(ctx context.Context, filter bson.M) (ImageRecord, error) {
 	var record MongoImageRecord
 	err := db.collection.FindOne(ctx, filter).Decode(&record)
 
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
 	}
-	return record, err
+	return &record, err
+}
+
+func (db *MongoDB) FindByTags(ctx context.Context, tags []string) (ImageRecord, error) {
+	filter := bson.M{"tags": bson.M{"$in": tags}}
+	return db.read(ctx, filter)
 }

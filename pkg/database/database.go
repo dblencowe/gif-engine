@@ -2,10 +2,12 @@ package database
 
 import "context"
 
-type ImageRecord interface{}
+type ImageRecord interface {
+	Url() string
+}
 
 type DB interface {
 	Stop(context.Context) error
 	Write(context.Context, any) error
-	Read(context.Context, any) (ImageRecord, error)
+	FindByTags(context.Context, []string) (ImageRecord, error)
 }
