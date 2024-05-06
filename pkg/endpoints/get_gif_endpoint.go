@@ -40,7 +40,7 @@ func (ep *GetGifEndpoint) Execute(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("0 results available for tags %v", tags), http.StatusNotFound)
 		return
 	}
-	log.Printf("Accepted types: %+v", r.Header.Get("Accept"))
+
 	w.Header().Add("Content-Type", "image/gif")
 	body, err := utils.LoadBytesFromFS(rst.Url())
 	if err != nil {
