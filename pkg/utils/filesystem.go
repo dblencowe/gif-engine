@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	gourl "net/url"
 	"os"
 	"strings"
 
@@ -22,8 +23,9 @@ func DownloadUrlToFile(url, destination string) (string, error) {
 		return "", err
 	}
 
-	parts := strings.Split(url, ".")
-	ext := parts[len(parts) - 1]
+	u, _ := gourl.Parse(url)
+	parts := strings.Split(u.Path, ".")
+	ext := parts[len(parts)-1]
 	destFileName := uuid.New()
 	destinationPath := fmt.Sprintf("%s/%s.%s", destination, destFileName.String(), ext)
 

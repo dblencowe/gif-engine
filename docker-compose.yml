@@ -6,6 +6,9 @@ services:
     environment:
       MONGODB_URI: mongodb://root:root@mongodb:27017/
       DATA_DIR: /data
+    env_file:
+      - path: ./.env
+        required: true
     volumes:
       - data:/data
   mongodb:

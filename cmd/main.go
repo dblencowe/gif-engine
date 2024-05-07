@@ -7,6 +7,7 @@ import (
 	"github.com/Netflix/go-env"
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/database"
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/endpoints"
+	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/fallbacks"
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/http"
 )
 
@@ -41,6 +42,7 @@ func init() {
 		},
 		&endpoints.GetGifEndpoint{
 			DB: db,
+			Fallback: fallbacks.NewGiphyFallback(),
 		},
 		&endpoints.BaseEndpoint{},
 	}
