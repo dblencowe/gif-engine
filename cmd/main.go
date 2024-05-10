@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/utils"
 
 	"github.com/Netflix/go-env"
 	"vcs.services.strawberryelk.internal/strawberryelk/gif-engine/pkg/database"
@@ -16,9 +17,9 @@ var cfg Environment
 var db database.DB
 
 type Environment struct {
-	MongoDBURI string `env:"MONGODB_URI"`
+	MongoDBURI    string `env:"MONGODB_URI"`
 	DataDirectory string `env:"DATA_DIR"`
-	Extras     env.EnvSet
+	Extras        env.EnvSet
 }
 
 func init() {
@@ -37,12 +38,16 @@ func init() {
 
 	httpEndpoints = []endpoints.Endpoint{
 		&endpoints.IndexGifEndpoint{
-			DB: db,
+			DB:        db,
 			ImagePath: cfg.DataDirectory,
 		},
 		&endpoints.GetGifEndpoint{
-			DB: db,
+			DB:       db,
 			Fallback: fallbacks.NewGiphyFallback(),
+		},
+		&endpoints.JoinGifEndpoint{
+			Editor:    &utils.GIFEditor{},
+			ImagePath: cfg.DataDirectory,
 		},
 		&endpoints.BaseEndpoint{},
 	}

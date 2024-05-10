@@ -17,3 +17,12 @@ curl --location 'http://localhost:5000/write' \
 ```bash
 curl --location --globoff 'http://localhost:5000/gif?tags[]=something'
 ```
+
+### Concatenate two gifs
+```bash
+curl --location 'http://localhost:5000/join' \
+--header 'Content-Type: text/plain' \
+--data '{
+    "urls": ["https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExemNjajVvcGhqd2RnODZnYzBkamR3c3Q2bm00dmR3OGwybW1kaHE0MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CuMiNoTRz2bYc/giphy.gif", "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExemMxM3lhbHRrdDdvMGtpYncwZHA4cDVudHJqMTJ2eWd0bDNlYXl2dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/RfEbMBTPQ7MOY/giphy.gif"]
+}'
+```
